@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import imufusion
+from statistics import stdev
+from scipy.interpolate import CubicSpline
 
 
 def get_noise_stats(df, winsize=50):
@@ -83,7 +85,46 @@ def add_noise(df, winsize=50, noise_stats=None, num_noise=2000, reduce_noise=Fal
     return df
 
 
-def madgwick_eulers_mag(data, sample_rate, add_zeros=2000,  gain=0.5, acc_rej=10, mag_rej=20, sec=5):
+def simple_integration(arr, sample_rate):
+    res = np.zeros(len(arr)+1)
+    res[0] = 0
+    for i in range(1,len(arr)):
+        res[i] = res[i-1] + arr[i]/sample_rate
+    return res[1:]
+
+
+def process_angles_for_plot(angles):
+    '''
+    the function checks if the angles by madgwick exceed 180 degrees limit and corrects that
+    '''
+    res = np.empty_like(angles)
+    for i in range(1,len(res)):
+        if abs(angles[i]-res[i-1])>100:
+            res[i] = angles[i] + np.sign(res[i-1])*2*180
+#             print(res[i-1])
+        else:
+            res[i] = angles[i]
+    return res
+
+
+def find_closest(x_to, x_from, y_from):
+    '''
+    resamples y_from to x_to using CubicSpline
+    '''
+    # res = np.empty([x_to.shape[0]])
+    x_to = np.array(x_to)
+    x_from = np.array(x_from)
+    y_from = np.array(y_from)
+    func = CubicSpline(x_from, y_from)
+    # this is for the case when x_to is more in value than x_from 
+    for i in range(len(x_to)-1, 0, -1):
+        if x_to[i] < x_from[-1]:
+            break
+    res = func(x_to[:i+1])
+    return res[:]
+
+
+def madgwick_eulers_mag(data, sample_rate, gain=0.5, acc_rej=10, mag_rej=20, sec=5):
     '''
     the function calculates Euler angles from IMU measurements using Madgwick magnetometer-enabled algorithm
     data: IMU measurements in Pandas DataFrame table,
@@ -97,14 +138,15 @@ def madgwick_eulers_mag(data, sample_rate, add_zeros=2000,  gain=0.5, acc_rej=10
     Returns: Euler angles (X, Y, Z)
     '''
     df = data.copy()
-    zers = pd.DataFrame(np.random.normal(loc=0, scale=0.01, size=(add_zeros, len(df.columns))), columns=df.columns)
-    zers['acc_y'] +=1
-    df = pd.concat([zers, df.loc[:]], axis=0).reset_index(drop=True)
+    # zers = pd.DataFrame(np.random.normal(loc=0, scale=0.01, size=(add_zeros, len(df.columns))), columns=df.columns)
+    # zers = pd.DataFrame(np.zeros(shape=((add_zeros, len(df.columns)))), columns=df.columns)
+    # zers['acc_y'] +=1
+    # df = pd.concat([zers, df.loc[:]], axis=0).reset_index(drop=True)
     timestamp = np.array(df['seconds'])
     gyroscope = np.array(df[df.columns[df.columns.str.contains('gyr')]])
     accelerometer = np.array(df[df.columns[df.columns.str.contains('acc')]])
     magnetometer = np.array(df[df.columns[df.columns.str.contains('mag')]])
-#     offset = imufusion.Offset(sample_rate)
+    # offset = imufusion.Offset(sample_rate)
     ahrs_ = imufusion.Ahrs()
     ahrs_.settings = imufusion.Settings(imufusion.CONVENTION_NWU,
                                    gain,  # gain
@@ -117,10 +159,10 @@ def madgwick_eulers_mag(data, sample_rate, add_zeros=2000,  gain=0.5, acc_rej=10
 #         gyroscope[index] = offset.update(gyroscope[index])
         ahrs_.update(gyroscope[index], accelerometer[index], magnetometer[index], delta_time[index])
         euler[index] = ahrs_.quaternion.to_euler()
-    return euler[add_zeros:]
+    return euler
 
 
-def madgwick_eulers_no_mag(data, sample_rate, add_zeros=1000, gain=0.5, acc_rej=10, sec=5):
+def madgwick_eulers_no_mag(data, sample_rate, gain=0.5, acc_rej=10, sec=5):
     '''
     the function calculates Euler angles from IMU measurements using Madgwick magnetometer-disabled algorithm
     data: IMU measurements in Pandas DataFrame table,
@@ -133,13 +175,14 @@ def madgwick_eulers_no_mag(data, sample_rate, add_zeros=1000, gain=0.5, acc_rej=
     Returns: Euler angles (X, Y, Z)
     '''
     df = data.copy()
-    zers = pd.DataFrame(np.random.normal(loc=0, scale=0.01, size=(add_zeros, len(df.columns))), columns=df.columns)
-    zers['acc_y'] +=1
-    df = pd.concat([zers, df.loc[:]], axis=0).reset_index(drop=True)
+    # zers = pd.DataFrame(np.random.normal(loc=0, scale=0.01, size=(add_zeros, len(df.columns))), columns=df.columns)
+    # zers = pd.DataFrame(np.zeros(shape=((add_zeros, len(df.columns)))), columns=df.columns)
+    # zers['acc_y'] +=1
+    # df = pd.concat([zers, df.loc[:]], axis=0).reset_index(drop=True)
     timestamp = np.array(df['seconds'])
     gyroscope = np.array(df[df.columns[df.columns.str.contains('gyr')]])
     accelerometer = np.array(df[df.columns[df.columns.str.contains('acc')]])
-    offset = imufusion.Offset(sample_rate)
+    # offset = imufusion.Offset(sample_rate)
     ahrs_ = imufusion.Ahrs()
     euler = np.empty((len(timestamp), 3))
     ahrs_.settings = imufusion.Settings(imufusion.CONVENTION_NWU,
@@ -151,7 +194,7 @@ def madgwick_eulers_no_mag(data, sample_rate, add_zeros=1000, gain=0.5, acc_rej=
 #         gyroscope[index] = offset.update(gyroscope[index])
         ahrs_.update_no_magnetometer(gyroscope[index,], accelerometer[index], 1 / sample_rate)
         euler[index] = ahrs_.quaternion.to_euler()
-    return euler[add_zeros:]
+    return euler
 
 
 def thr_madgwick_eulers(data, sample_rate, noise_stats=None, zeros=False, winsize=50, add_zeros=2000, thr=0.1, gain=0.5, acc_rej=10, sec=5,
