@@ -17,7 +17,7 @@ Setups are presented in photos below. Setups 1 and 2 are similar to each other, 
 </tr>
 </table>
 
-The datasets are written to CSV **_csv_** files and can be downloaded from [Google drive](https://drive.google.com/drive/folders/11T_5DR6Rnr8eeFteVZ_w3SqR17zyQix1?usp=sharing)
+The datasets are written to CSV files and can be downloaded from [Google drive](https://drive.google.com/drive/folders/11T_5DR6Rnr8eeFteVZ_w3SqR17zyQix1?usp=sharing)
 
 Table structure is as follows:
 
