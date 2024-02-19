@@ -17,7 +17,9 @@ Setups are presented in photos below. Setups 1 and 2 are similar to each other, 
 </tr>
 </table>
 
-The datasets are written to Microsoft Excel **_xslx_** files for compression purposes and are organized as follows:
+The datasets are written to CSV **_csv_** files and can be downloaded from [Google drive](https://drive.google.com/drive/folders/11T_5DR6Rnr8eeFteVZ_w3SqR17zyQix1?usp=sharing)
+
+Table structure is as follows:
 
 * **train_dataset.xlsx** contains all the training IMU data used in the paper;
 * **unused_data.xlsx** contains IMU data that was recorded but was not used in training for various reasons;
