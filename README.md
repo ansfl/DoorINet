@@ -37,6 +37,7 @@ imufusion >= 1.1.1
 
 * Install all the necessary packages (see **Requirements** section). 
 * Clone this repository.
+* Download models and dataset from [Google drive](https://drive.google.com/drive/folders/11T_5DR6Rnr8eeFteVZ_w3SqR17zyQix1?usp=sharing)
 * Use train.py and test.py for training and testing of the models
 * Use inference.py for loading the trained model
 
