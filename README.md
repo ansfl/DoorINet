@@ -26,7 +26,7 @@ pytorch >= 2.0
 
 imufusion >= 1.1.1
 
-## Models architectures
+## Models Architectures
 **G-DoorINet** architecture consists of bi-directional GRU layers and fully-connected (dense) layers. It takes a series of 20 consequent gyroscope measurements as an input and outputs a heading angle increment over the input series taken.
 ![Figure_3_1](https://github.com/ansfl/DoorINet/assets/89016122/ca90a2b7-cc90-4ab3-91a5-ff640724552b)
 
@@ -43,5 +43,10 @@ imufusion >= 1.1.1
 
 ## Citation
 
-_to be written soon_
-
+If you found our paper, code, or dataset helpful in your research, please cite our paper:
+```
+@article{engelsman2023parametric,
+  title={Parametric and State Estimation of Stationary MEMS-IMUs: A Tutorial},
+  author={Engelsman, Daniel and Stolero, Yair and Klein, Itzik},
+  journal={arXiv preprint arXiv:2307.08571},
+  year={2023}
