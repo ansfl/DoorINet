@@ -45,8 +45,8 @@ imufusion >= 1.1.1
 
 If you found our paper, code, or dataset helpful in your research, please cite our paper:
 ```
-@article{engelsman2023parametric,
-  title={Parametric and State Estimation of Stationary MEMS-IMUs: A Tutorial},
-  author={Engelsman, Daniel and Stolero, Yair and Klein, Itzik},
-  journal={arXiv preprint arXiv:2307.08571},
-  year={2023}
+@article{doorinet2024,
+  title={DoorINet: A Deep-Learning Inertial Framework for Door-Mounted IoT Applications},
+  author={Zakharchenko, Aleksei and Farber, Sharon and Klein, Itzik},
+  journal={arXiv preprint arXiv:2402.09427},
+  year={2024}
