@@ -45,8 +45,13 @@ imufusion >= 1.1.1
 
 If you found our paper, code, or dataset helpful in your research, please cite our paper:
 ```
-@article{doorinet2024,
-  title={DoorINet: A Deep-Learning Inertial Framework for Door-Mounted IoT Applications},
+@ARTICLE{10639321,
   author={Zakharchenko, Aleksei and Farber, Sharon and Klein, Itzik},
-  journal={arXiv preprint arXiv:2402.09427},
-  year={2024}
+  journal={IEEE Sensors Journal}, 
+  title={DoorINet: Door Heading Prediction Through Inertial Deep Learning}, 
+  year={2024},
+  volume={24},
+  number={19},
+  pages={31456-31465},
+  doi={10.1109/JSEN.2024.3442812}}
+
